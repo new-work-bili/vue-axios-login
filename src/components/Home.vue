@@ -1,7 +1,10 @@
 <template >
 	<wrapper>
-		<div class="text">dsadsadsadsdsad</div>
-		<div class="button" @click="login">进入仓库</div>
+		<div class="box">
+			<h3 class="text">使用vue-router和axios进行token的登陆拦截,并调用gtihub接口查看git仓库</h3>
+			<div class="button" @click="login">进入仓库</div>
+		</div>
+		
 	</wrapper>
 </template>
 <script>
@@ -50,5 +53,10 @@
 		margin: 5px auto;
 		border-radius: 6px;
 		cursor: pointer;
+	}
+	>>>.content {
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 </style>

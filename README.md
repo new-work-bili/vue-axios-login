@@ -4,18 +4,23 @@
 
 
 
-###使用vue-router和axios进行token的登陆拦截,并调用gtihub接口查看git仓库
-###技术栈：
+### 使用vue-router和axios进行token的登陆拦截,并调用gtihub接口查看git仓库
+### 技术栈：
 * vue
 * vue-router 
 * axios
 * bootstrap
 * vux
+### 截图
+![Home](README_files/4.jpg)
+![Login](README_files/2.jpg)
+![storehouse](README_files/1.jpg)
 
-###登陆拦截
 
->vue-router导航守卫:
-	设置全局前置守卫判断，其中to将要进入的路由
+
+### 登陆拦截
+> vue-router导航守卫:
+	设置全局前置守卫判断，参数(to,from,next)，其中to表示将要进入的路由
 	我们在/storehouse路由(仓库页面)设置一个参数mate:{requiresAuth:true}，标记该路由
 	之后在前置守卫中设置
 	每次做路由跳转时，判断将要进入的路由是否含有requiresAuth参数，既要跳转的路由是否是/storehouse路由
@@ -59,14 +64,42 @@ router.beforeEach((to, from, next) => {
 })
 ```
 
->axios拦截器：
+> axios拦截器：
 进入仓库页面后
-在触发mounted钩子时(即页面挂在完成)使用axios
-会在请求头中的A*****设置我们输入的token，
+在触发mounted钩子时(即页面挂载完成)使用axios发送get请求
+此时触发axios的请求拦截,如果state中有token的话，在请求头中设置Authorization为${store.state.token}
+
 如果token无效，会返回401,
 当返回401时，重新调回登陆页面，并弹出报错信息
 
 ```
+components>storehouse.vue:
+
+...
+this.axios.get('/user/repos?sort=update').then(response => {
+	console.log(response.data)
+	this.list = response.data;
+	console.log(this.list[0].owner)
+	this.list.forEach(item => {
+		//通过正则匹配去掉一些字符，以获得仓库地址---
+		item.deployments_url = item.deployments_url.replace(reg, '')
+		//https://api.github.com/repos/new-work-bili/vue-TourismProject/deployments——————>https://github.com/new-work-bili/vue-TourismProject/
+	})
+
+}).catch(err => { //token无效会返回401
+	if (err.response && err.response.data) { //不&&判断的话,会包 'Cannot read property 'data' of undefined'
+		// console.log(err.response)
+		alert(err.response.status + ':' + err.response.data.message)
+
+	} else {
+		// console.log(err)
+		alert('请求超时')
+	}
+
+})
+...
+
+router>http.js:
 //axios的请求拦截，在每次使用axios如get时会触发
 axios.interceptors.request.use( 
 	config => {
@@ -99,19 +132,19 @@ axios.interceptors.response.use(
 	})
 ```
 
-###其他：
->router.replace与router.push
-	当从登陆界面路由跳转至仓库路由或者token无效从仓库路由调回登陆路由时
-	使用的是router.replace而不是router.push
-	他们都能导航到不同的url，区别是,router.replace跳转时不会再向history里保存当前URL
-	所以使用router.replace跳转后，点击浏览器后退按钮时，不会返回上一个页面，而是上上一个页面
+### 其他：
+> router.replace与router.push
+当从登陆界面路由跳转至仓库路由或者token无效从仓库路由调回登陆路由时
+使用的是router.replace而不是router.push
+他们都能导航到不同的url，区别是,router.replace跳转时不会再向history里保存当前URL
+所以使用router.replace跳转后，点击浏览器后退按钮时，不会返回上一个页面，而是上上一个页面
 比如 登陆成功后跳转至仓库，如果用router.push，当点击返回时会调回至登陆页面，又要重新登录验证
 
->正则表达式
-	因为返回的数据没有对应项目的链接，只有对应项目的接口地址
-	https://api.github.com/repos/new-work-bili/Chat-room/deployments
-	使用正则表达式进行匹配更改：
-	https://github.com/new-work-bili/vue-TourismProject/
+> 正则表达式
+因为返回的数据没有对应项目的链接，只有对应项目的接口地址
+如：https://api.github.com/repos/new-work-bili/Chat-room/deployments
+使用正则表达式进行匹配更改：
+变成：https://github.com/new-work-bili/vue-TourismProject/
 	
 
 ```
