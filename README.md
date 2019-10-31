@@ -7,7 +7,7 @@
 ###使用vue-router和axios进行token的登陆拦截,并调用gtihub接口查看git仓库
 ###技术栈：
 * vue
-* vue-router
+* vue-router 
 * axios
 * bootstrap
 * vux
