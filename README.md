@@ -20,9 +20,9 @@
 
 ### 登陆拦截
 > vue-router导航守卫:
-	设置全局前置守卫判断，参数(to,from,next)，其中to表示将要进入的路由
-	我们在/storehouse路由(仓库页面)设置一个参数mate:{requiresAuth:true}，标记该路由
-	之后在前置守卫中设置
+
+*1.*	我们在/storehouse路由(仓库页面)设置一个参数mate:{requiresAuth:true}，标记该路由
+* 之后设置全局前置守卫判断，参数(to,from,next)，其中to表示将要进入的路由
 	每次做路由跳转时，判断将要进入的路由是否含有requiresAuth参数，既要跳转的路由是否是/storehouse路由
 	如果是，判断是否输入了token,如果state中有token的值，那么next()； 进入/storehouse
 	否则，回跳至登陆页面进行登录
@@ -65,12 +65,12 @@ router.beforeEach((to, from, next) => {
 ```
 
 > axios拦截器：
-进入仓库页面后
-在触发mounted钩子时(即页面挂载完成)使用axios发送get请求
-此时触发axios的请求拦截,如果state中有token的话，在请求头中设置Authorization为${store.state.token}
+	进入仓库页面后
+	在触发mounted钩子时(即页面挂载完成)使用axios发送get请求
+	此时触发axios的请求拦截,如果state中有token的话，在请求头中设置Authorization为${store.state.token}
 
-如果token无效，会返回401,
-当返回401时，重新调回登陆页面，并弹出报错信息
+	如果token无效，会返回401,
+	当返回401时，清除token，重新跳回登陆页面，并弹出报错信息
 
 ```
 components>storehouse.vue:
